@@ -1,5 +1,5 @@
 # extract cbomkit version tag from pom.xml
-VERSION := $(shell curl -s https://api.github.com/repos/pqca/cbomkit/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+VERSION := $(shell curl -s https://api.github.com/repos/cbomkit/cbomkit/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 # set engine to use for build and compose, default to docker
 ENGINE ?= docker
 # build the backend
@@ -23,17 +23,30 @@ build-frontend-image:
 dev:
 	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile dev up -d
 dev-backend:
-	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile dev-backend up
+	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile dev-backend up -d
 dev-frontend:
 	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile dev-frontend up
 # run the prod setup using $(ENGINE) compose
 production:
 	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile prod up
 edge:
-	$(ENGINE) pull ghcr.io/pqca/cbomkit:edge
-	$(ENGINE) pull ghcr.io/pqca/cbomkit-frontend:edge
+	$(ENGINE) pull ghcr.io/cbomkit/cbomkit:edge
+	$(ENGINE) pull ghcr.io/cbomkit/cbomkit-frontend:edge
 	env CBOMKIT_VERSION=edge CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile prod up
 coeus:
 	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=true $(ENGINE)-compose --profile viewer up
 ext-compliance:
 	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile ext-compliance up
+
+deploy:
+	helm install cbomkit \
+		--set common.clusterDomain=openshift-cluster-d465a2b8669424cc1f37658bec09acda-0000.eu-de.containers.appdomain.cloud \
+		--set cbomkit.tag=${VERSION} \
+		--set frontend.tag=${VERSION} \
+		--set postgresql.auth.username=cbomkit \
+		--set postgresql.auth.password=cbomkit \
+		./chart
+
+undeploy:
+	helm uninstall cbomkit
+
