@@ -158,7 +158,7 @@ components:
           $ref: "#/components/schemas/Credentials"
 info:
   title: CBOMkit API
-  version: 2.0.0-SNAPSHOT
+  version: 2.1.11
   description: Service for generating and retrieving CBOMs
 servers:
 - url: http://localhost:8081
