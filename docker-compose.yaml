@@ -29,7 +29,7 @@ services:
 #      CBOMKIT_REGULATOR_API_BASE: "http://regulator:8080"
 #      CBOMKIT_QS_EXPLORER_API_BASE: "http://localhost:8000/api/v1/scan"
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     volumes:
       - cbomkit-volume:/home/user/.cbomkit
     restart: always
@@ -49,7 +49,7 @@ services:
       VUE_APP_TITLE: "CBOMkit"
       VUE_APP_VIEWER_ONLY: ${CBOMKIT_VIEWER}
     ports:
-      - "8001:8000"
+      - "127.0.0.1:8001:8000"
     restart: always
     profiles:
       - prod
@@ -64,7 +64,7 @@ services:
       POSTGRES_USER: ${POSTGRESQL_AUTH_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRESQL_AUTH_PASSWORD}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: [ "CMD", "pg_isready -U ${POSTGRESQL_AUTH_USERNAME} -d postgres" ]
       interval: 10s
