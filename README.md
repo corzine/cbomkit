@@ -16,7 +16,7 @@ CBOMkit is a toolset for dealing with Cryptography Bill of Materials (CBOM). CBO
 
 ## Quickstart
 
-Starting the CBOMkit using `docker-compose`.
+Starting the CBOMkit using `docker compose`.
 ```shell
 # clone the repository 
 git clone https://github.com/cbomkit/cbomkit
